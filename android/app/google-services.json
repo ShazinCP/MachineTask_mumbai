@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "662494600565",
+    "project_id": "machinetask-mumbai",
+    "storage_bucket": "machinetask-mumbai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662494600565:android:ba54cfb8aa7e62248b873c",
+        "android_client_info": {
+          "package_name": "com.example.mumbai_machinetask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtBLbwytPSIfIrXcFWN1E7QLJwcVDO1oo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
