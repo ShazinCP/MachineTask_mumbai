@@ -4,7 +4,7 @@ import 'package:mumbai_machinetask/controller/task_controller.dart';
 import 'package:mumbai_machinetask/helper/colors.dart';
 import 'package:mumbai_machinetask/model/task_model.dart';
 import 'package:mumbai_machinetask/services/auth_services.dart';
-import 'package:mumbai_machinetask/view/add_screen.dart';
+import 'package:mumbai_machinetask/view/add_screen/add_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
