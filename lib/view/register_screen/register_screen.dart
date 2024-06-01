@@ -6,9 +6,9 @@ import 'package:mumbai_machinetask/view/widgets/textfield_widget.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class LoginScreen extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
   void Function()? onTap;
-  LoginScreen({super.key, required this.onTap});
+  RegisterScreen({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +31,19 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               TextFieldWidget(
-                controller: provider.loginEmailController,
+                controller: provider.registerEmailController,
                 hintText: "email...",
                 obscureText: false,
                 keyboardType: TextInputType.emailAddress,
               ),
               TextFieldWidget(
-                controller: provider.loginPasswordController,
+                controller: provider.registerPasswordController,
                 hintText: "password...",
+                obscureText: false,
+              ),
+              TextFieldWidget(
+                controller: provider.confirmPasswordController,
+                hintText: "Confirm password...",
                 obscureText: false,
               ),
               Padding(
@@ -47,13 +52,13 @@ class LoginScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "Doesn't have an account?",
+                      "Already have an account?  ",
                       style: TextStyle(color: cGreyColor, fontSize: 13),
                     ),
                     TextButton(
                       onPressed: onTap,
                       child: Text(
-                        "Register now",
+                        "Login now",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -69,7 +74,7 @@ class LoginScreen extends StatelessWidget {
                 width: 300,
                 child: ElevatedButton(
                   onPressed: () {
-                    login(context);
+                    register(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cCyanColor,
@@ -80,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
-                      'Login',
+                      'Register',
                       style: TextStyle(
                         color: cWhiteColor,
                         fontSize: 16,
@@ -96,20 +101,29 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void login(BuildContext context) async {
+  void register(BuildContext context) {
     final provider = Provider.of<AuthProvider>(context, listen: false);
-    final authService = AuthServices();
-
-    try {
-      await authService.signInWithEmailPassword(
-          provider.loginEmailController.text,
-          provider.loginPasswordController.text);
-    } catch (e) {
+    final auth = AuthServices();
+    if (provider.registerPasswordController.text ==
+        provider.confirmPasswordController.text) {
+      try {
+        auth.signUpWithEmailPassword(
+          provider.registerEmailController.text,
+          provider.registerPasswordController.text,
+        );
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(e.toString()),
+          ),
+        );
+      }
+    } else {
       showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(e.toString()),
+        builder: (context) => const AlertDialog(
+          title: Text("Password don't match!"),
         ),
       );
     }

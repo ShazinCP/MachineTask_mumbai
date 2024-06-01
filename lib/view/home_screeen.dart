@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mumbai_machinetask/controller/task_controller.dart';
 import 'package:mumbai_machinetask/helper/colors.dart';
+import 'package:mumbai_machinetask/model/task_model.dart';
+import 'package:mumbai_machinetask/services/auth_services.dart';
 import 'package:mumbai_machinetask/view/add_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -12,12 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // @override
-  // void initState() {
-  //   final provider = Provider.of<TaskProvider>(context, listen: false);
-  //   super.initState();
-  //   provider.fetchTask();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<TaskProvider>(context, listen: false);
+    provider.fetchTasks();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +36,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () => logout(),
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: Consumer<TaskProvider>(
         builder: (context, provider, child) {
           return RefreshIndicator(
-            onRefresh: provider.fetchTask,
+            onRefresh: () => provider.fetchTasks(),
             child: Visibility(
-              // visible: provider.items.isNotEmpty,
+              visible: provider.tasks.isNotEmpty,
               replacement: const Center(
                 child: Text(
                   'No Item',
@@ -47,40 +56,53 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               child: ListView.builder(
-                // itemCount: provider.items.length,
-                itemCount: 10,
+                itemCount: provider.tasks.length,
                 padding: const EdgeInsets.all(8),
                 itemBuilder: (context, index) {
-                  // final item = provider.items[index];
+                  final item = provider.tasks[index];
                   return Card(
                     child: ListTile(
                       leading: CircleAvatar(
-                          backgroundColor: cCyanColor,
-                          child: Text('${index + 1}')),
-                      title: Text("item.title!"),
-                      subtitle: Text("item.description!"),
-                      trailing: PopupMenuButton(
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            // Navigator.of(context).push(MaterialPageRoute(
-                            //   builder: (context) => AddScreen(todo: item),
-                            // ));
-                          } else if (value == 'delete') {
-                            provider.deleteById("item.id!");
-                          }
-                        },
-                        itemBuilder: (context) {
-                          return [
-                            const PopupMenuItem(
-                              value: 'edit',
-                              child: Text("Edit"),
-                            ),
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Text("Delete"),
-                            ),
-                          ];
-                        },
+                        backgroundColor: cCyanColor,
+                        child: Text('${index + 1}'),
+                      ),
+                      title: Text(item.title),
+                      subtitle: Text(formatDate(item.deadline)),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Checkbox(
+                            value: item.isComplete,
+                            onChanged: (bool? value) {
+                              if (value != null) {
+                                setState(() {
+                                  item.isComplete = value;
+                                });
+                              }
+                            },
+                          ),
+                          PopupMenuButton(
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                navigateToEditPage(item);
+                              } else if (value == 'delete') {
+                                provider.deleteTask(item.id);
+                              }
+                            },
+                            itemBuilder: (context) {
+                              return [
+                                const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text("Edit"),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text("Delete"),
+                                ),
+                              ];
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -102,24 +124,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> navigateToEditPage(Map item) async {
+  Future<void> navigateToEditPage(TaskModel item) async {
     final provider = Provider.of<TaskProvider>(context, listen: false);
     final route = MaterialPageRoute(
       builder: (context) => AddScreen(todo: item),
     );
     await Navigator.push(context, route);
     provider.setLoading(true);
-    provider.fetchTask();
+    provider.fetchTasks();
   }
 
-  // void showErrorMessage(String message) {
-  //   final snackBar = SnackBar(
-  //     content: Text(
-  //       message,
-  //       style: const TextStyle(color: cWhiteColor),
-  //     ),
-  //     backgroundColor: cRedColor,
-  //   );
-  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  // }
+  void logout() {
+    final auth = AuthServices();
+    auth.signOut();
+  }
+
+  String formatDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
 }

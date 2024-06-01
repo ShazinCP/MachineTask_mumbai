@@ -126,26 +126,17 @@ class _AddScreenState extends State<AddScreen> {
                         ),
                       ],
                     ),
-                    // CheckboxListTile(
-                    //   title: const Text('Completed'),
-                    //   value: provider.isComplete,
-                    //   onChanged: (value) {
-                    //     provider.seletedIsComplete(
-                    //       provider.isComplete = value!,
-                    //     );
-                    //   },
-                    // ),
                     cHeight20,
                     ElevatedButton(
                       onPressed: () {
                         if (provider.isEdit) {
-                          provider.updateData(widget.todo);
-                          showSuccessMessage('Updation Success');
-                          Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ));
+                          // provider.updateTask(widget.todo);
+                          // showSuccessMessage('Updation Success');
+                          // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          //   builder: (context) => const HomeScreen(),
+                          // ));
                         } else {
-                          provider.submitData();
+                          provider.addTask();
                           showSuccessMessage('Creation Success');
                         }
                       },
